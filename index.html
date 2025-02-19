@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafio Python Interativo - O Chamado das Estrelas</title>
+  <!-- Importando fontes do Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset básico */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      /* Fundo com gradiente e imagem de estrelas e mistério */
+      background: linear-gradient(135deg, #0b0f1a, #1a2238);
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+    }
+    /* Fundo animado sutil com imagem temática de estrelas e mistério */
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* Imagem temática de estrelas e mistério */
+      background: url('https://images.unsplash.com/photo-1509718443690-d8e2fb3474b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+      opacity: 0.3;
+      z-index: -1;
+      animation: zoomIn 20s infinite alternate;
+    }
+    @keyframes zoomIn {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+    /* Container principal */
+    .container {
+      max-width: 800px;
+      margin: 60px auto;
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.8em;
+      margin-bottom: 20px;
+      font-family: 'Montserrat', sans-serif;
+    }
+    p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+    /* Área de código */
+    textarea {
+      width: 100%;
+      height: 250px;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-family: 'Montserrat', sans-serif;
+      resize: vertical;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      font-size: 1.2em;
+      background: #5563DE;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.3s ease;
+      font-family: 'Montserrat', sans-serif;
+    }
+    button:hover {
+      background: #3f4ac8;
+    }
+    .output {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-family: 'Source Code Pro', monospace;
+      white-space: pre-wrap;
+      min-height: 50px;
+    }
+    /* Mensagem de aviso para os usuários */
+    .instructions {
+      font-size: 0.95em;
+      background: #f1f1f1;
+      color: #333;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    /* Responsividade */
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 2.2em;
+      }
+    }
+  </style>
+  <!-- Importando Brython -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython_stdlib.js"></script>
+</head>
+<body onload="brython()">
+  <div class="background-overlay"></div>
+  <div class="container">
+    <h1>Desafio Python Interativo</h1>
+    <p>
+      Bem-vindo à seção interativa dos desafios de <em>O Chamado das Estrelas</em>! Sua tarefa é decifrar a mensagem criptografada <strong>"frphvdu"</strong> usando a cifra de César com um deslocamento de 3.
+      Ao executar o código corretamente, o resultado (por exemplo, <strong>"codigo"</strong>) servirá como chave para desbloquear novas páginas do livro.
+    </p>
+    <div class="instructions">
+      Você pode editar o código, mas lembre-se: o código não pode ultrapassar 1000 caracteres. Faça modificações com cuidado!
+    </div>
+    <textarea id="code_area">def decifrar_cesar(mensagem, chave):
+    resultado = ""
+    for char in mensagem:
+        if 'a' <= char <= 'z':
+            resultado += chr((ord(char) - ord('a') - chave) % 26 + ord('a'))
+        elif 'A' <= char <= 'Z':
+            resultado += chr((ord(char) - ord('A') - chave) % 26 + ord('A'))
+        else:
+            resultado += char
+    return resultado
+
+mensagem = "frphvdu"
+chave = 3
+print(decifrar_cesar(mensagem, chave))
+    </textarea>
+    <button id="run_button">Executar Código</button>
+    <div class="output" id="output"></div>
+  </div>
+  
+  <!-- Script Brython para executar o código Python com limite de caracteres -->
+  <script type="text/python">
+from browser import document
+import sys
+
+# Guarda a referência original do stdout para restauração
+original_stdout = sys.stdout
+
+class OutputCatcher:
+    def __init__(self, output_id):
+        self.output = document[output_id]
+    def write(self, data):
+        self.output.textContent += data
+    def flush(self):
+        pass
+
+def run_code(ev):
+    # Limpa o output anterior
+    document["output"].textContent = ""
+    # Obtém o código do textarea
+    code = document["code_area"].value
+    # Verifica o tamanho do código (limite: 1000 caracteres)
+    if len(code) > 1000:
+        document["output"].textContent = "Erro: Código muito longo. Limite: 1000 caracteres."
+        return
+    # Redireciona sys.stdout para o OutputCatcher
+    sys.stdout = OutputCatcher("output")
+    try:
+        exec(code)
+    except Exception as e:
+        document["output"].textContent += "\nErro: " + str(e)
+    # Armazena o resultado do código executado
+    result = document["output"].textContent.strip()
+    # Restaura sys.stdout
+    sys.stdout = original_stdout
+    # Verifica o resultado e exibe a mensagem apropriada
+    if result == "codigo":
+        document["output"].textContent = "Parabéns! Você decifrou a mensagem corretamente.\nSua senha para desbloquear as próximas páginas é: codigo"
+    else:
+        document["output"].textContent = "Resposta incorreta. Tente novamente!\nSeu resultado: " + result
+
+document["run_button"].bind("click", run_code)
+  </script>
+</body>
+</html>
+
