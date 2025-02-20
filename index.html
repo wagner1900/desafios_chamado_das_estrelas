@@ -15,27 +15,21 @@
     html, body {
       width: 100%; 
       height: 100%; 
-      overflow: auto; /* Permite rolagem caso o conteúdo exceda a tela */
+      overflow: auto; 
       font-family: 'Source Code Pro', monospace;
       background-color: #000;
       color: #0f0;
     }
 
-    /* Canvas do efeito Matrix */
-    #matrix, 
-    /* Partículas */
-    #particles-js {
+    #matrix, #particles-js {
       position: fixed;
-      top: 0; 
-      left: 0;
-      width: 100%; 
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: -2; 
       pointer-events: none;
       opacity: 0.15;
     }
 
-    /* Container principal */
     .container {
       max-width: 750px;
       margin: 40px auto; 
@@ -45,7 +39,7 @@
       padding: 25px;
       text-align: center;
       position: relative;
-      z-index: 1; /* Fica acima do matrix e particles */
+      z-index: 1;
     }
 
     h1 {
@@ -54,7 +48,6 @@
       color: #0f0;
     }
 
-    /* Terminal Hacker */
     #terminal {
       background-color: #001a00;
       padding: 15px;
@@ -68,7 +61,6 @@
       box-shadow: inset 0 0 10px #0f0;
     }
 
-    /* Campo de texto e botão */
     input[type="text"] {
       width: 100%;
       padding: 10px;
@@ -80,6 +72,7 @@
       outline: none;
       text-align: center;
     }
+
     button {
       width: 100%;
       padding: 12px;
@@ -95,11 +88,6 @@
       background-color: #5f5;
     }
 
-    /* Botão para iniciar a imersão (batimento + música) */
-    #immerseBtn {
-      margin-bottom: 15px;
-    }
-
     #result {
       margin-top: 15px;
       font-weight: bold;
@@ -107,12 +95,12 @@
       text-align: center;
     }
 
-    /* Imagem revelada */
+    /* Imagem Revelada */
     #hiddenImage {
       display: none;
       margin-top: 20px;
       width: 100%;
-      max-height: 1200px;
+      max-height: 1200px; 
       border-radius: 10px;
       box-shadow: 0 0 50px rgba(0, 255, 0, 0.9);
       animation: reveal 1.5s ease forwards, pulse 2s infinite alternate;
@@ -149,6 +137,7 @@
 </head>
 <body>
 
+<!-- Canvas Matrix + Partículas -->
 <canvas id="matrix"></canvas>
 <div id="particles-js"></div>
 
@@ -172,20 +161,20 @@ Dica: A senha está escondida em "frphvdu" (Cifra de César -3).
 
 </div>
 
-<!-- Sons -->
-<audio id="heartbeat" src="https://cdn.pixabay.com/download/audio/2022/03/31/audio_8b6a55fc45.mp3" loop></audio>
-<audio id="dramaticMusic" src="https://cdn.pixabay.com/download/audio/2022/02/23/audio_8964f86b26.mp3" loop></audio>
-<audio id="successSound" src="https://cdn.pixabay.com/download/audio/2021/12/22/audio_003f086708.mp3"></audio>
-<audio id="revealSound" src="https://cdn.pixabay.com/download/audio/2022/03/14/audio_5a8eae6eaf.mp3"></audio>
+<!-- Sons: heartbeat, dramaticMusic, mysticSound (tocado 1x quando a foto aparece) -->
+<audio id="heartbeat" src="./sounds/heartbeat_grave.mp3" loop></audio>
+<audio id="dramaticMusic" src="./sounds/cinematic-dramatic-11120.mp3" loop></audio>
+<audio id="mysticSound" src="./sounds/mystic-logo-13493.mp3"></audio>
 
 <!-- Particles.js -->
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 
 <script>
+  // EFEITO MATRIX
   const matrixCanvas = document.getElementById('matrix');
   const ctx = matrixCanvas.getContext('2d');
   const letters = "アカサタナハマヤラワ0123456789";
-  const fontSize = 16;
+  let fontSize = 16;
   let columns;
   let drops = [];
 
@@ -200,7 +189,6 @@ Dica: A senha está escondida em "frphvdu" (Cifra de César -3).
   function drawMatrix() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
     ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-
     ctx.fillStyle = "#0F0";
     ctx.font = fontSize + "px monospace";
 
@@ -220,11 +208,10 @@ Dica: A senha está escondida em "frphvdu" (Cifra de César -3).
     matrixCanvas.width = window.innerWidth;
     initMatrix();
   };
-
   initMatrix();
   setInterval(drawMatrix, 35);
 
-  // Partículas
+  // Particles
   particlesJS("particles-js", {
     particles: {
       number: { value: 60, density: { enable: true, value_area: 600 }},
@@ -240,43 +227,48 @@ Dica: A senha está escondida em "frphvdu" (Cifra de César -3).
     }
   });
 
-  // Sons
+  // SONS
   const heartbeat = document.getElementById('heartbeat');
   const dramaticMusic = document.getElementById('dramaticMusic');
-  const successSound = document.getElementById('successSound');
-  const revealSound = document.getElementById('revealSound');
+  const mysticSound = document.getElementById('mysticSound');
 
-  // Botão de imersão
+  // Botão "Iniciar Imersão"
   const immerseBtn = document.getElementById('immerseBtn');
   immerseBtn.addEventListener('click', () => {
-    heartbeat.volume = 0.5;
+    heartbeat.volume = 0.4;
     dramaticMusic.volume = 0.3;
-    heartbeat.play().catch(err => console.log("🔇 Erro Batimento:", err));
-    dramaticMusic.play().catch(err => console.log("🔇 Erro Musica:", err));
+    heartbeat.play().catch(err => console.log("Erro batimento:", err));
+    dramaticMusic.play().catch(err => console.log("Erro musica:", err));
     immerseBtn.style.display = 'none';
   });
 
-  // Terminal e resultado
+  // Terminal, imagem e resultado
   const terminal = document.getElementById('terminal');
   const hiddenImage = document.getElementById('hiddenImage');
   const result = document.getElementById('result');
 
+  // Verifica Senha
   function checkAnswer() {
     const input = document.getElementById('userInput').value.trim().toLowerCase();
-
     terminal.textContent += `\n>>> Verificando: ${input}...`;
     terminal.scrollTop = terminal.scrollHeight;
 
     setTimeout(() => {
       if (input === 'codigo') {
-        terminal.textContent += "\n✅ Acesso concedido! Arquivo secreto sendo revelado...";
+        terminal.textContent += "\n✅ Acesso concedido! Revelando arquivo secreto...";
+        // Ao revelar, para a musica dramatica
+        dramaticMusic.pause();
+        // Mantém batimento
+        // Toca o som místico 1x
+        mysticSound.play();
+
+        // Mensagem animada
         result.innerHTML = `<div class="typing">🚀 Missão concluída com sucesso!</div>`;
-        successSound.play();
 
         setTimeout(() => {
           hiddenImage.style.display = 'block';
-          revealSound.play();
         }, 1200);
+
       } else {
         terminal.textContent += "\n❌ Senha incorreta. Tente novamente.";
         result.textContent = '❌ Erro! Confira as dicas.';
@@ -288,4 +280,3 @@ Dica: A senha está escondida em "frphvdu" (Cifra de César -3).
 
 </body>
 </html>
-
