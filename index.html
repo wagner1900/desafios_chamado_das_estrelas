@@ -1,205 +1,291 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Desafio Python Interativo - O Chamado das Estrelas</title>
-  <!-- Importando fontes do Google Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔓 Missão Hacker - O Chamado das Estrelas</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap">
   <style>
     /* Reset básico */
     * {
       box-sizing: border-box;
-      margin: 0;
+      margin: 0; 
       padding: 0;
     }
     html, body {
-      height: 100%;
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; /* Permite rolagem caso o conteúdo exceda a tela */
+      font-family: 'Source Code Pro', monospace;
+      background-color: #000;
+      color: #0f0;
     }
-    body {
-      font-family: 'Montserrat', sans-serif;
-      /* Fundo com gradiente e imagem de estrelas e mistério */
-      background: linear-gradient(135deg, #0b0f1a, #1a2238);
-      color: #fff;
-      overflow-x: hidden;
-      position: relative;
-    }
-    /* Fundo animado sutil com imagem temática de estrelas e mistério */
-    .background-overlay {
+
+    /* Canvas do efeito Matrix */
+    #matrix, 
+    /* Partículas */
+    #particles-js {
       position: fixed;
-      top: 0;
+      top: 0; 
       left: 0;
-      width: 100%;
+      width: 100%; 
       height: 100%;
-      /* Imagem temática de estrelas e mistério */
-      background: url('https://images.unsplash.com/photo-1509718443690-d8e2fb3474b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
-      opacity: 0.3;
-      z-index: -1;
-      animation: zoomIn 20s infinite alternate;
+      z-index: -2; 
+      pointer-events: none;
+      opacity: 0.15;
     }
-    @keyframes zoomIn {
-      from { transform: scale(1); }
-      to { transform: scale(1.05); }
-    }
+
     /* Container principal */
     .container {
-      max-width: 800px;
-      margin: 60px auto;
-      background: rgba(255, 255, 255, 0.95);
-      color: #333;
-      padding: 30px 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    h1 {
+      max-width: 750px;
+      margin: 40px auto; 
+      background: rgba(0, 0, 0, 0.85);
+      box-shadow: 0 0 20px #0f0;
+      border-radius: 10px;
+      padding: 25px;
       text-align: center;
-      font-size: 2.8em;
-      margin-bottom: 20px;
-      font-family: 'Montserrat', sans-serif;
+      position: relative;
+      z-index: 1; /* Fica acima do matrix e particles */
     }
-    p {
-      font-size: 1.1em;
-      line-height: 1.6;
-      margin-bottom: 20px;
-      text-align: justify;
+
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 15px;
+      color: #0f0;
     }
-    /* Área de código */
-    textarea {
-      width: 100%;
+
+    /* Terminal Hacker */
+    #terminal {
+      background-color: #001a00;
+      padding: 15px;
+      border-radius: 8px;
       height: 250px;
-      padding: 10px;
+      overflow-y: auto;
       font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-top: 20px;
-      font-family: 'Montserrat', sans-serif;
-      resize: vertical;
+      border: 1px solid #0f0;
+      white-space: pre-wrap;
+      text-align: left;
+      box-shadow: inset 0 0 10px #0f0;
+    }
+
+    /* Campo de texto e botão */
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      background-color: #001a00;
+      color: #0f0;
+      border: none;
+      outline: none;
+      text-align: center;
     }
     button {
-      display: block;
       width: 100%;
-      padding: 15px;
-      font-size: 1.2em;
-      background: #5563DE;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 1em;
+      background-color: #0f0;
+      color: #000;
+      border-radius: 5px;
       cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.3s ease;
-      font-family: 'Montserrat', sans-serif;
+      transition: 0.3s ease;
     }
     button:hover {
-      background: #3f4ac8;
+      background-color: #5f5;
     }
-    .output {
-      background: #2d2d2d;
-      color: #f8f8f2;
-      padding: 15px;
-      border-radius: 4px;
+
+    /* Botão para iniciar a imersão (batimento + música) */
+    #immerseBtn {
+      margin-bottom: 15px;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.2em;
+      text-align: center;
+    }
+
+    /* Imagem revelada */
+    #hiddenImage {
+      display: none;
       margin-top: 20px;
-      font-family: 'Source Code Pro', monospace;
-      white-space: pre-wrap;
-      min-height: 50px;
+      width: 100%;
+      max-height: 1200px;
+      border-radius: 10px;
+      box-shadow: 0 0 50px rgba(0, 255, 0, 0.9);
+      animation: reveal 1.5s ease forwards, pulse 2s infinite alternate;
     }
-    /* Mensagem de aviso para os usuários */
-    .instructions {
-      font-size: 0.95em;
-      background: #f1f1f1;
-      color: #333;
-      padding: 10px;
-      border-radius: 4px;
-      margin-bottom: 20px;
+    @keyframes reveal {
+      0% { transform: scale(0.3); opacity: 0; }
+      70% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
     }
-    /* Responsividade */
-    @media (max-width: 600px) {
-      .container {
-        margin: 20px;
-        padding: 20px;
-      }
-      h1 {
-        font-size: 2.2em;
-      }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.6); }
+      100% { box-shadow: 0 0 40px rgba(0, 255, 0, 1); }
+    }
+
+    /* Texto digitando */
+    .typing {
+      display: inline-block;
+      border-right: 2px solid #0f0;
+      white-space: nowrap;
+      overflow: hidden;
+      animation: typing 3s steps(30, end), blink 0.75s step-end infinite alternate;
+      font-size: 1.2em;
+      margin-top: 15px;
+    }
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    @keyframes blink {
+      from { border-color: transparent; }
+      to { border-color: #0f0; }
     }
   </style>
-  <!-- Importando Brython -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython_stdlib.js"></script>
 </head>
-<body onload="brython()">
-  <div class="background-overlay"></div>
-  <div class="container">
-    <h1>Desafio Python Interativo</h1>
-    <p>
-      Bem-vindo à seção interativa dos desafios de <em>O Chamado das Estrelas</em>! Sua tarefa é decifrar a mensagem criptografada <strong>"frphvdu"</strong> usando a cifra de César com um deslocamento de 3.
-      Ao executar o código corretamente, o resultado (por exemplo, <strong>"codigo"</strong>) servirá como chave para desbloquear novas páginas do livro.
-    </p>
-    <div class="instructions">
-      Você pode editar o código, mas lembre-se: o código não pode ultrapassar 1000 caracteres. Faça modificações com cuidado!
-    </div>
-    <textarea id="code_area">def decifrar_cesar(mensagem, chave):
-    resultado = ""
-    for char in mensagem:
-        if 'a' <= char <= 'z':
-            resultado += chr((ord(char) - ord('a') - chave) % 26 + ord('a'))
-        elif 'A' <= char <= 'Z':
-            resultado += chr((ord(char) - ord('A') - chave) % 26 + ord('A'))
-        else:
-            resultado += char
-    return resultado
+<body>
 
-mensagem = "frphvdu"
-chave = 3
-print(decifrar_cesar(mensagem, chave))
-    </textarea>
-    <button id="run_button">Executar Código</button>
-    <div class="output" id="output"></div>
-  </div>
+<canvas id="matrix"></canvas>
+<div id="particles-js"></div>
+
+<div class="container">
+  <h1>🔓 Missão Hacker: O Chamado das Estrelas</h1>
   
-  <!-- Script Brython para executar o código Python com limite de caracteres -->
-  <script type="text/python">
-from browser import document
-import sys
+  <!-- Botão para iniciar sons -->
+  <button id="immerseBtn">🎧 Iniciar Imersão</button>
 
-# Guarda a referência original do stdout para restauração
-original_stdout = sys.stdout
+  <div id="terminal">
+Conectando ao servidor seguro...
+Estabelecendo acesso nível 1...
+Dica: A senha está escondida em "frphvdu" (Cifra de César -3).
+  </div>
 
-class OutputCatcher:
-    def __init__(self, output_id):
-        self.output = document[output_id]
-    def write(self, data):
-        self.output.textContent += data
-    def flush(self):
-        pass
+  <input type="text" id="userInput" placeholder="Digite a senha aqui..." />
+  <button onclick="checkAnswer()">Verificar Acesso</button>
 
-def run_code(ev):
-    # Limpa o output anterior
-    document["output"].textContent = ""
-    # Obtém o código do textarea
-    code = document["code_area"].value
-    # Verifica o tamanho do código (limite: 1000 caracteres)
-    if len(code) > 1000:
-        document["output"].textContent = "Erro: Código muito longo. Limite: 1000 caracteres."
-        return
-    # Redireciona sys.stdout para o OutputCatcher
-    sys.stdout = OutputCatcher("output")
-    try:
-        exec(code)
-    except Exception as e:
-        document["output"].textContent += "\nErro: " + str(e)
-    # Armazena o resultado do código executado
-    result = document["output"].textContent.strip()
-    # Restaura sys.stdout
-    sys.stdout = original_stdout
-    # Verifica o resultado e exibe a mensagem apropriada
-    if result == "codigo":
-        document["output"].textContent = "Parabéns! Você decifrou a mensagem corretamente.\nSua senha para desbloquear as próximas páginas é: codigo"
-    else:
-        document["output"].textContent = "Resposta incorreta. Tente novamente!\nSeu resultado: " + result
+  <div id="result"></div>
+  <img id="hiddenImage" src="desbloqueio_imagem.webp" alt="Imagem desbloqueada do universo de O Chamado das Estrelas">
 
-document["run_button"].bind("click", run_code)
-  </script>
+</div>
+
+<!-- Sons -->
+<audio id="heartbeat" src="https://cdn.pixabay.com/download/audio/2022/03/31/audio_8b6a55fc45.mp3" loop></audio>
+<audio id="dramaticMusic" src="https://cdn.pixabay.com/download/audio/2022/02/23/audio_8964f86b26.mp3" loop></audio>
+<audio id="successSound" src="https://cdn.pixabay.com/download/audio/2021/12/22/audio_003f086708.mp3"></audio>
+<audio id="revealSound" src="https://cdn.pixabay.com/download/audio/2022/03/14/audio_5a8eae6eaf.mp3"></audio>
+
+<!-- Particles.js -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+  const matrixCanvas = document.getElementById('matrix');
+  const ctx = matrixCanvas.getContext('2d');
+  const letters = "アカサタナハマヤラワ0123456789";
+  const fontSize = 16;
+  let columns;
+  let drops = [];
+
+  matrixCanvas.height = window.innerHeight;
+  matrixCanvas.width = window.innerWidth;
+
+  function initMatrix() {
+    columns = Math.floor(window.innerWidth / fontSize);
+    drops = Array(columns).fill(1);
+  }
+
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+    ctx.fillStyle = "#0F0";
+    ctx.font = fontSize + "px monospace";
+
+    drops.forEach((y, i) => {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, y * fontSize);
+
+      if (y * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    });
+  }
+
+  window.onresize = () => {
+    matrixCanvas.height = window.innerHeight;
+    matrixCanvas.width = window.innerWidth;
+    initMatrix();
+  };
+
+  initMatrix();
+  setInterval(drawMatrix, 35);
+
+  // Partículas
+  particlesJS("particles-js", {
+    particles: {
+      number: { value: 60, density: { enable: true, value_area: 600 }},
+      color: { value: "#0f0" },
+      shape: { type: "circle" },
+      opacity: { value: 0.5 },
+      size: { value: 3 },
+      move: { enable: true, speed: 2 }
+    },
+    interactivity: {
+      events: { onhover: { enable: true, mode: "repulse" }},
+      modes: { repulse: { distance: 80 }}
+    }
+  });
+
+  // Sons
+  const heartbeat = document.getElementById('heartbeat');
+  const dramaticMusic = document.getElementById('dramaticMusic');
+  const successSound = document.getElementById('successSound');
+  const revealSound = document.getElementById('revealSound');
+
+  // Botão de imersão
+  const immerseBtn = document.getElementById('immerseBtn');
+  immerseBtn.addEventListener('click', () => {
+    heartbeat.volume = 0.5;
+    dramaticMusic.volume = 0.3;
+    heartbeat.play().catch(err => console.log("🔇 Erro Batimento:", err));
+    dramaticMusic.play().catch(err => console.log("🔇 Erro Musica:", err));
+    immerseBtn.style.display = 'none';
+  });
+
+  // Terminal e resultado
+  const terminal = document.getElementById('terminal');
+  const hiddenImage = document.getElementById('hiddenImage');
+  const result = document.getElementById('result');
+
+  function checkAnswer() {
+    const input = document.getElementById('userInput').value.trim().toLowerCase();
+
+    terminal.textContent += `\n>>> Verificando: ${input}...`;
+    terminal.scrollTop = terminal.scrollHeight;
+
+    setTimeout(() => {
+      if (input === 'codigo') {
+        terminal.textContent += "\n✅ Acesso concedido! Arquivo secreto sendo revelado...";
+        result.innerHTML = `<div class="typing">🚀 Missão concluída com sucesso!</div>`;
+        successSound.play();
+
+        setTimeout(() => {
+          hiddenImage.style.display = 'block';
+          revealSound.play();
+        }, 1200);
+      } else {
+        terminal.textContent += "\n❌ Senha incorreta. Tente novamente.";
+        result.textContent = '❌ Erro! Confira as dicas.';
+      }
+      terminal.scrollTop = terminal.scrollHeight;
+    }, 1000);
+  }
+</script>
+
 </body>
 </html>
 
